@@ -14,14 +14,21 @@ export interface Route {
 export class Router {
   public routes: Route[] = [];
 
+  private escapeRegex(str: string): string {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
   private parsePattern(pattern: string): { regex: RegExp; paramNames: string[] } {
     const paramNames: string[] = [];
+    // First escape all regex special characters except :param markers
     const regexPattern = pattern
       .replace(/:[^/]+/g, (match) => {
         paramNames.push(match.slice(1));
-        return '([^/]+)';
+        return '___PARAM___'; // Placeholder
       })
-      .replace(/\//g, '\\/');
+      .split('/')
+      .map(segment => segment === '___PARAM___' ? '([^/]+)' : this.escapeRegex(segment))
+      .join('\\/');
     
     return {
       regex: new RegExp(`^${regexPattern}$`),
