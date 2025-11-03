@@ -9,11 +9,10 @@ export interface Route {
   pattern: RegExp;
   handler: RouteHandler;
   paramNames: string[];
-  requiresAuth: boolean;
 }
 
 export class Router {
-  private routes: Route[] = [];
+  public routes: Route[] = [];
 
   private parsePattern(pattern: string): { regex: RegExp; paramNames: string[] } {
     const paramNames: string[] = [];
@@ -30,43 +29,47 @@ export class Router {
     };
   }
 
-  private addRoute(method: string, path: string, handler: RouteHandler, requiresAuth: boolean = false) {
+  private addRoute(method: string, path: string, handler: RouteHandler) {
     const { regex, paramNames } = this.parsePattern(path);
     this.routes.push({
       method: method.toUpperCase(),
       pattern: regex,
       handler,
       paramNames,
-      requiresAuth,
     });
   }
 
-  get(path: string, handler: RouteHandler, requiresAuth: boolean = false) {
-    this.addRoute('GET', path, handler, requiresAuth);
+  get(path: string, handler: RouteHandler) {
+    this.addRoute('GET', path, handler);
   }
 
-  post(path: string, handler: RouteHandler, requiresAuth: boolean = false) {
-    this.addRoute('POST', path, handler, requiresAuth);
+  post(path: string, handler: RouteHandler) {
+    this.addRoute('POST', path, handler);
   }
 
-  put(path: string, handler: RouteHandler, requiresAuth: boolean = false) {
-    this.addRoute('PUT', path, handler, requiresAuth);
+  put(path: string, handler: RouteHandler) {
+    this.addRoute('PUT', path, handler);
   }
 
-  delete(path: string, handler: RouteHandler, requiresAuth: boolean = false) {
-    this.addRoute('DELETE', path, handler, requiresAuth);
+  delete(path: string, handler: RouteHandler) {
+    this.addRoute('DELETE', path, handler);
+  }
+
+  merge(router: Router) {
+    this.routes.push(...router.routes);
   }
 
   async handle(request: Request): Promise<Response> {
     const url = new URL(request.url);
     const method = request.method;
     const path = url.pathname;
+    const origin = request.headers.get('origin') || undefined;
 
     // Handle OPTIONS for CORS preflight
     if (method === 'OPTIONS') {
       return new Response(null, {
         status: 204,
-        headers: corsHeaders(),
+        headers: corsHeaders(origin),
       });
     }
 

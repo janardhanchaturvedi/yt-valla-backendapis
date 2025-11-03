@@ -89,6 +89,7 @@ Create a `.env` file based on `.env.example`:
 # Server Configuration
 PORT=3000
 NODE_ENV=development
+CORS_ALLOWED_ORIGINS=*
 
 # Database
 DATABASE_URL="postgresql://username:password@localhost:5432/ytvalla?schema=public"

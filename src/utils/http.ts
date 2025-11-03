@@ -55,9 +55,20 @@ export async function authenticateRequest(request: Request): Promise<JWTPayload>
   return payload;
 }
 
-export function corsHeaders(): Record<string, string> {
+import { config } from './config';
+
+export function corsHeaders(origin?: string): Record<string, string> {
+  const allowedOrigins = config.cors.allowedOrigins;
+  
+  // If specific origins are configured (not '*'), validate the origin
+  let allowOrigin = allowedOrigins;
+  if (allowedOrigins !== '*' && origin) {
+    const allowed = allowedOrigins.split(',').map(o => o.trim());
+    allowOrigin = allowed.includes(origin) ? origin : allowed[0] || '*';
+  }
+  
   return {
-    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Origin': allowOrigin,
     'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization',
   };
