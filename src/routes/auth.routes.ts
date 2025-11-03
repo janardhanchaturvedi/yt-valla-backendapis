@@ -4,8 +4,11 @@ import { authService } from '../services/auth.service';
 import { registerSchema, loginSchema } from '../utils/validations';
 import { config } from '../utils/config';
 import { authMiddleware } from '../middlewares/auth.middleware';
+import { errorMiddleware } from '../middlewares/error.middleware';
+import { requireAuth } from '../utils/auth-helpers';
 
 export const authRoutes = new Elysia({ prefix: '/auth' })
+  .use(errorMiddleware)
   .use(
     jwt({
       name: 'jwt',
@@ -66,8 +69,14 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
     }
   )
   .use(authMiddleware)
-  .get('/me', async ({ user }) => {
-    const userData = await authService.getUserById(user.id);
+  .get('/me', async ({ user, set }) => {
+    const authError = requireAuth(user);
+    if (authError) {
+      set.status = 401;
+      return authError;
+    }
+    
+    const userData = await authService.getUserById(user!.id);
 
     return {
       success: true,
