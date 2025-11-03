@@ -3,7 +3,8 @@ import { AppError } from '../utils/errors';
 
 export const errorMiddleware = new Elysia()
   .onError(({ code, error, set }) => {
-    console.error('Error:', error);
+    // Log error message without exposing sensitive information
+    console.error('Error occurred:', error instanceof Error ? error.message : 'Unknown error', 'Code:', code);
 
     if (error instanceof AppError) {
       set.status = error.statusCode;

@@ -28,8 +28,9 @@ export class StorageService {
 
     await this.s3Client.send(command);
 
-    // Construct public URL
-    const publicUrl = `${config.digitalOcean.endpoint}/${config.digitalOcean.bucket}/${key}`;
+    // Construct public URL in the format: https://{bucket}.{region}.digitaloceanspaces.com/{key}
+    const bucketUrl = config.digitalOcean.endpoint.replace('https://', `https://${config.digitalOcean.bucket}.`);
+    const publicUrl = `${bucketUrl}/${key}`;
     return publicUrl;
   }
 

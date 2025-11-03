@@ -48,7 +48,9 @@ export class AIService {
       }
 
       // Upload to DigitalOcean Spaces
-      const fileName = `${image.id}.png`;
+      // Determine file extension based on provider (both return PNG format)
+      const fileExtension = 'png';
+      const fileName = `${image.id}.${fileExtension}`;
       const uploadedUrl = await storageService.uploadFromUrl(generatedImageUrl, fileName);
 
       // Update image record
@@ -72,7 +74,7 @@ export class AIService {
       try {
         await creditService.addCredits(userId, cost, `Refund for failed image generation`);
       } catch (refundError) {
-        console.error('Failed to refund credits:', refundError);
+        console.error('Failed to refund credits:', refundError instanceof Error ? refundError.message : 'Unknown error');
       }
 
       throw new BadRequestError(
@@ -99,7 +101,7 @@ export class AIService {
 
   private async generateWithReplicate(prompt: string): Promise<string> {
     const output = await this.replicate.run(
-      'stability-ai/sdxl:39ed52f2a78e934b3ba6e2a89f5b1c712de7dfea535525255b1aa35c5565e08b',
+      config.replicate.model as any,
       {
         input: {
           prompt,

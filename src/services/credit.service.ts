@@ -20,7 +20,7 @@ export class CreditService {
       throw new BadRequestError('Amount must be positive');
     }
 
-    // Update user credits and create transaction in a transaction
+    // Update user credits and create transaction record atomically
     const [user, transaction] = await prisma.$transaction([
       prisma.user.update({
         where: { id: userId },

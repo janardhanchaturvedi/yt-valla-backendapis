@@ -1,3 +1,8 @@
+// Validate required environment variables in production
+if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) {
+  throw new Error('JWT_SECRET must be set in production environment');
+}
+
 export const config = {
   port: process.env.PORT || 3000,
   nodeEnv: process.env.NODE_ENV || 'development',
@@ -19,6 +24,7 @@ export const config = {
   replicate: {
     apiKey: process.env.REPLICATE_API_KEY || '',
     imageCost: parseInt(process.env.REPLICATE_IMAGE_COST || '5'),
+    model: process.env.REPLICATE_MODEL || 'stability-ai/sdxl:39ed52f2a78e934b3ba6e2a89f5b1c712de7dfea535525255b1aa35c5565e08b',
   },
   
   digitalOcean: {
