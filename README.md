@@ -1,15 +1,15 @@
 # YTVaala Backend APIs
 
-Backend APIs for YTVaala.app - A high-performance AI image generation platform built with Bun.js, Elysia.js, Prisma, and PostgreSQL.
+Backend APIs for YTVaala.app - A high-performance AI image generation platform built with Bun.js native HTTP server, Prisma, and PostgreSQL.
 
 ## 🚀 Features
 
-- **Authentication**: JWT-based authentication with secure password hashing
+- **Authentication**: JWT-based authentication with secure password hashing (using jose library)
 - **AI Image Generation**: Support for OpenAI DALL-E 3 and Replicate Stable Diffusion XL
 - **Credit System**: User credit management with transaction history
 - **Cloud Storage**: Automatic upload to DigitalOcean Spaces
 - **Type Safety**: Full TypeScript support with Zod validation
-- **Fast & Scalable**: Built on Bun.js runtime for optimal performance
+- **Fast & Scalable**: Built on Bun.js native HTTP server for optimal performance
 - **Secure**: Industry-standard security practices
 
 ## 📁 Folder Structure
@@ -44,10 +44,9 @@ yt-valla-backendapis/
 
 ## 🛠️ Tech Stack
 
-- **Runtime**: Bun.js
-- **Framework**: Elysia.js
+- **Runtime**: Bun.js native HTTP server
 - **Database**: PostgreSQL with Prisma ORM
-- **Authentication**: JWT (@elysiajs/jwt)
+- **Authentication**: JWT (jose library)
 - **Validation**: Zod
 - **AI Services**: OpenAI, Replicate
 - **Storage**: DigitalOcean Spaces (S3-compatible)
@@ -277,7 +276,8 @@ The API uses consistent error responses:
 
 ## 📈 Performance Optimizations
 
-- Bun.js runtime for ultra-fast execution
+- Bun.js native HTTP server for ultra-fast execution
+- No framework overhead - direct HTTP handling
 - Efficient database queries with Prisma
 - Transaction-based credit operations
 - Async image generation with error recovery
@@ -297,4 +297,4 @@ Janardhan Chaturvedi
 
 ---
 
-Built with ❤️ using Bun.js + Elysia.js + Prisma + PostgreSQL
+Built with ❤️ using Bun.js + Prisma + PostgreSQL

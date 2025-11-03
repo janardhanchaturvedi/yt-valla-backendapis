@@ -1,44 +1,40 @@
-import { Elysia, t } from 'elysia';
+import { Router } from '../utils/router';
 import { creditService } from '../services/credit.service';
-import { authMiddleware } from '../middlewares/auth.middleware';
+import { authenticateRequest } from '../utils/http';
 
-export const creditRoutes = new Elysia({ prefix: '/credits' })
-  .use(authMiddleware)
-  .get('/balance', async ({ user }) => {
-    const balance = await creditService.getBalance(user.id);
+export const creditRoutes = new Router();
 
-    return {
-      success: true,
-      data: { credits: balance },
-    };
-  })
-  .post(
-    '/add',
-    async ({ user, body }) => {
-      const result = await creditService.addCredits(
-        user.id,
-        body.amount,
-        body.description
-      );
+creditRoutes.get('/credits/balance', async ({ request }) => {
+  const user = await authenticateRequest(request);
+  const balance = await creditService.getBalance(user.userId);
 
-      return {
-        success: true,
-        data: result,
-      };
-    },
-    {
-      body: t.Object({
-        amount: t.Number(),
-        description: t.Optional(t.String()),
-      }),
-    }
-  )
-  .get('/history', async ({ user, query }) => {
-    const limit = query.limit ? parseInt(query.limit) : 50;
-    const transactions = await creditService.getTransactionHistory(user.id, limit);
+  return {
+    success: true,
+    data: { credits: balance },
+  };
+});
 
-    return {
-      success: true,
-      data: transactions,
-    };
-  });
+creditRoutes.post('/credits/add', async ({ request, body }) => {
+  const user = await authenticateRequest(request);
+  const result = await creditService.addCredits(
+    user.userId,
+    body.amount,
+    body.description
+  );
+
+  return {
+    success: true,
+    data: result,
+  };
+});
+
+creditRoutes.get('/credits/history', async ({ request, query }) => {
+  const user = await authenticateRequest(request);
+  const limit = query.limit ? parseInt(query.limit) : 50;
+  const transactions = await creditService.getTransactionHistory(user.userId, limit);
+
+  return {
+    success: true,
+    data: transactions,
+  };
+});
