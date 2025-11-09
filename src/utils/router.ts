@@ -20,16 +20,15 @@ export class Router {
 
   private parsePattern(pattern: string): { regex: RegExp; paramNames: string[] } {
     const paramNames: string[] = [];
-    // First escape all regex special characters except :param markers
     const regexPattern = pattern
       .replace(/:[^/]+/g, (match) => {
         paramNames.push(match.slice(1));
-        return '___PARAM___'; // Placeholder
+        return '___PARAM___';
       })
       .split('/')
       .map(segment => segment === '___PARAM___' ? '([^/]+)' : this.escapeRegex(segment))
       .join('\\/');
-    
+
     return {
       regex: new RegExp(`^${regexPattern}$`),
       paramNames,
@@ -62,8 +61,29 @@ export class Router {
     this.addRoute('DELETE', path, handler);
   }
 
-  merge(router: Router) {
-    this.routes.push(...router.routes);
+  merge(router: Router, prefix: string = '') {
+    for (const route of router.routes) {
+      const prefixedPattern = prefix + route.pattern.source.replace(/^(\^)?/, '^' + prefix);
+      this.routes.push({
+        ...route,
+        pattern: new RegExp(prefixedPattern),
+      });
+    }
+  }
+
+  /** ✅ Group-based routing */
+  group(prefix: string, callback: (router: Router) => void) {
+    const subRouter = new Router();
+    callback(subRouter);
+    // Merge with prefix
+    for (const route of subRouter.routes) {
+      const prefixedPath = `${prefix}${route.pattern.source.replace(/^\^/, '').replace(/\$$/, '')}`;
+      const newPattern = new RegExp(`^${prefixedPath}$`);
+      this.routes.push({
+        ...route,
+        pattern: newPattern,
+      });
+    }
   }
 
   async handle(request: Request): Promise<Response> {
@@ -72,7 +92,6 @@ export class Router {
     const path = url.pathname;
     const origin = request.headers.get('origin') || undefined;
 
-    // Handle OPTIONS for CORS preflight
     if (method === 'OPTIONS') {
       return new Response(null, {
         status: 204,
@@ -80,25 +99,20 @@ export class Router {
       });
     }
 
-    // Find matching route
     for (const route of this.routes) {
       if (route.method !== method) continue;
-
       const match = path.match(route.pattern);
       if (!match) continue;
 
       try {
-        // Parse params
         const params: Record<string, string> = {};
         route.paramNames.forEach((name, index) => {
-          params[name] = match[index + 1];
+          params[name] = match[index + 1] || '';
         });
 
-        // Parse query and body
         const query = parseQuery(url);
         const body = await parseBody(request);
 
-        // Create context
         const ctx: RequestContext = {
           request,
           params,
@@ -106,16 +120,15 @@ export class Router {
           body,
         };
 
-        // Handle the route
         const result = await route.handler(ctx);
         return jsonResponse(result);
       } catch (error) {
         console.error('Error handling request:', error);
-        
+
         if (error instanceof AppError) {
           return errorResponse(error, error.statusCode);
         }
-        
+
         return errorResponse(
           error instanceof Error ? error : new Error('Unknown error'),
           500
@@ -123,7 +136,6 @@ export class Router {
       }
     }
 
-    // No route found
     return jsonResponse(
       {
         success: false,

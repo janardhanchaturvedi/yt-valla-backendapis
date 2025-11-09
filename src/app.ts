@@ -15,16 +15,19 @@ router.get('/', async () => ({
   version: '1.0.0',
 }));
 
-router.get('/health', async () => ({
-  success: true,
-  status: 'healthy',
-  timestamp: new Date().toISOString(),
-}));
+// API v1 Group
+router.group('/api/v1', (api) => {
+  api.get('/health', async () => ({
+    success: true,
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+  }));
 
-// Merge all route modules
-router.merge(authRoutes);
-router.merge(creditRoutes);
-router.merge(imageRoutes);
+  // Merge your modular route files here
+  api.merge(authRoutes);
+  api.merge(creditRoutes);
+  api.merge(imageRoutes);
+});
 
 // Start Bun server
 export const server = Bun.serve({

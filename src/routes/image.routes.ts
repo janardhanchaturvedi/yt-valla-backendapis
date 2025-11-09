@@ -29,6 +29,14 @@ imageRoutes.get('/images', async ({ request, query }) => {
 
 imageRoutes.get('/images/:id', async ({ request, params }) => {
   const user = await authenticateRequest(request);
+  
+  if (!params?.id) {
+    return {
+      success: false,
+      error: 'Image ID is required',
+    };
+  }
+
   const image = await aiService.getImageById(params.id, user.userId);
 
   return {
