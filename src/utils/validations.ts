@@ -15,7 +15,7 @@ export const loginSchema = z.object({
 // Image Generation Schemas
 export const generateImageSchema = z.object({
   prompt: z.string().min(1, 'Prompt is required').max(1000, 'Prompt is too long'),
-  provider: z.enum(['openai', 'replicate']).default('openai'),
+  provider: z.enum(['openai', 'replicate', 'gemini']).default('gemini'),
 });
 
 // Credit Transaction Schemas

@@ -31,12 +31,12 @@ export function parseQuery(url: URL): Record<string, string> {
   return query;
 }
 
-export function parseBearerToken(request: Request): string | null {
+export function parseBearerToken(request: Request): string | undefined {
   const authorization = request.headers.get('authorization');
-  if (!authorization) return null;
+  if (!authorization) return undefined;
   
   const match = authorization.match(/^Bearer\s+(.+)$/i);
-  return match ? match[1] : null;
+  return match ? match[1] : undefined;
 }
 
 export async function authenticateRequest(request: Request): Promise<JWTPayload> {
@@ -54,7 +54,6 @@ export async function authenticateRequest(request: Request): Promise<JWTPayload>
   
   return payload;
 }
-
 import { config } from './config';
 
 export function corsHeaders(origin?: string): Record<string, string> {
