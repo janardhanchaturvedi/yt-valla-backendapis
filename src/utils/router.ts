@@ -3,16 +3,19 @@ import { parseBody, parseQuery, jsonResponse, errorResponse, corsHeaders } from 
 import { AppError } from './errors';
 
 export type RouteHandler = (ctx: RequestContext) => Promise<any> | any;
+export type Middleware = (ctx: RequestContext, next: () => Promise<Response>) => Promise<Response> | Response;
 
 export interface Route {
   method: string;
   pattern: RegExp;
   handler: RouteHandler;
+  middleware?: Middleware[];
   paramNames: string[];
 }
 
 export class Router {
   public routes: Route[] = [];
+  private middlewares: Middleware[] = [];
 
   private escapeRegex(str: string): string {
     return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -35,30 +38,31 @@ export class Router {
     };
   }
 
-  private addRoute(method: string, path: string, handler: RouteHandler) {
+  private addRoute(method: string, path: string, handler: RouteHandler, middleware?: Middleware[]) {
     const { regex, paramNames } = this.parsePattern(path);
     this.routes.push({
       method: method.toUpperCase(),
       pattern: regex,
       handler,
+      middleware,
       paramNames,
     });
   }
 
-  get(path: string, handler: RouteHandler) {
-    this.addRoute('GET', path, handler);
+  get(path: string, handler: RouteHandler, middleware?: Middleware[]) {
+    this.addRoute('GET', path, handler, middleware);
   }
 
-  post(path: string, handler: RouteHandler) {
-    this.addRoute('POST', path, handler);
+  post(path: string, handler: RouteHandler, middleware?: Middleware[]) {
+    this.addRoute('POST', path, handler, middleware);
   }
 
-  put(path: string, handler: RouteHandler) {
-    this.addRoute('PUT', path, handler);
+  put(path: string, handler: RouteHandler, middleware?: Middleware[]) {
+    this.addRoute('PUT', path, handler, middleware);
   }
 
-  delete(path: string, handler: RouteHandler) {
-    this.addRoute('DELETE', path, handler);
+  delete(path: string, handler: RouteHandler, middleware?: Middleware[]) {
+    this.addRoute('DELETE', path, handler, middleware);
   }
 
   merge(router: Router, prefix: string = '') {
