@@ -1,28 +1,45 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 // Auth Schemas
 export const registerSchema = z.object({
-  email: z.string().email('Invalid email format'),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
+  email: z.string().email("Invalid email format"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
   name: z.string().optional(),
 });
 
 export const loginSchema = z.object({
-  email: z.string().email('Invalid email format'),
-  password: z.string().min(1, 'Password is required'),
+  email: z.string().email("Invalid email format"),
+  password: z.string().min(1, "Password is required"),
 });
 
 // Image Generation Schemas
 export const generateImageSchema = z.object({
-  prompt: z.string().min(1, 'Prompt is required').max(1000, 'Prompt is too long'),
-  provider: z.enum(['openai', 'replicate', 'gemini']).default('gemini'),
+  prompt: z
+    .string()
+    .min(1, "Prompt is required")
+    .max(1000, "Prompt is too long"),
+  provider: z.enum(["openai", "replicate", "gemini"]).default("gemini"),
+});
+
+export const generateThumbnailSchema = z.object({
+  videoTitle: z.string().min(10, "Title is too Short"),
+  channelCategory: z.enum([
+    "tech",
+    "vlogging",
+    "education",
+    "cooking",
+    "lifestyle",
+    "gaming",
+  ]),
+  thumbnailStyle: z.enum(["bold", "minimalist", "cartoon", "photo"]),
+  mood: z.enum(["excited", "serious", "educational", "funny", "mysterious"]),
 });
 
 // Credit Transaction Schemas
 export const addCreditsSchema = z.object({
-  userId: z.string().uuid('Invalid user ID'),
-  amount: z.number().int().positive('Amount must be positive'),
-  description: z.string().optional().default('Credit added'),
+  userId: z.string().uuid("Invalid user ID"),
+  amount: z.number().int().positive("Amount must be positive"),
+  description: z.string().optional().default("Credit added"),
 });
 
 export type RegisterInput = z.infer<typeof registerSchema>;
