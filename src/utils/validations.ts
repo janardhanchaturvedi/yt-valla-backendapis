@@ -21,19 +21,42 @@ export const generateImageSchema = z.object({
   provider: z.enum(["openai", "replicate", "gemini"]).default("gemini"),
 });
 
-export const generateThumbnailSchema = z.object({
-  videoTitle: z.string().min(10, "Title is too Short"),
-  channelCategory: z.enum([
-    "tech",
-    "vlogging",
-    "education",
-    "cooking",
-    "lifestyle",
-    "gaming",
-  ]),
-  thumbnailStyle: z.enum(["bold", "minimalist", "cartoon", "photo"]),
-  mood: z.enum(["excited", "serious", "educational", "funny", "mysterious"]),
-});
+export const generateThumbnailSchema = z
+  .object({
+    videoTitle: z.string().min(10).max(120),
+    channelCategory: z.enum([
+      "tech",
+      "vlogging",
+      "education",
+      "cooking",
+      "lifestyle",
+      "gaming",
+    ]),
+    thumbnailStyle: z.enum(["bold", "minimalist", "cartoon", "photo"]),
+    mood: z.enum(["excited", "serious", "educational", "funny", "mysterious"]),
+    isFaceIncluded: z.boolean(),
+    faceImageData: z
+      .object({
+        data: z
+          .string()
+          .regex(/^data:image\/\w+;base64,/, "Invalid image base64"),
+
+        mimeType: z.enum(["image/jpeg", "image/png", "image/webp"]),
+      })
+      .optional(),
+  })
+  .refine(
+    (values) => {
+      if (values.isFaceIncluded) {
+        return !!values.faceImageData;
+      }
+      return true;
+    },
+    {
+      message: "Face image data is required when isFaceIncluded is true",
+      path: ["faceImageData"],
+    }
+  );
 
 // Credit Transaction Schemas
 export const addCreditsSchema = z.object({

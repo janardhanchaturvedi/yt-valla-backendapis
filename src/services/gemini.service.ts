@@ -1,7 +1,6 @@
 // FIX: Added Type to imports and imported SeoResult type.
 import { GoogleGenAI, Modality, Type } from "@google/genai";
-import type { SeoResult, SocialPostCopy } from '../types/types';
-
+import type { SeoResult, SocialPostCopy } from "../types/types";
 
 // FIX: Moved generateSeoContent from types.ts to centralize API calls.
 export async function generateSeoContent(topic: string): Promise<SeoResult> {
@@ -21,7 +20,7 @@ export async function generateSeoContent(topic: string): Promise<SeoResult> {
 
   try {
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-pro',
+      model: "gemini-2.5-pro",
       contents: prompt,
       config: {
         responseMimeType: "application/json",
@@ -40,33 +39,43 @@ export async function generateSeoContent(topic: string): Promise<SeoResult> {
       },
     });
 
-    const jsonText = response?.text?.trim() || '';
+    const jsonText = response?.text?.trim() || "";
     // In rare cases, the model might still wrap the JSON in markdown backticks
-    const cleanedJsonText = jsonText?.replace(/^```json\s*|```$/g, '');
-    
+    const cleanedJsonText = jsonText?.replace(/^```json\s*|```$/g, "");
+
     if (!cleanedJsonText) {
-        throw new Error("No valid response received from the model.");
-    }
-    
-    const parsedResult = JSON.parse(cleanedJsonText);
-    
-    // Basic validation to ensure the result matches the expected structure
-    if (parsedResult && typeof parsedResult.title === 'string' && typeof parsedResult.description === 'string' && Array.isArray(parsedResult.tags)) {
-        return parsedResult;
-    } else {
-        throw new Error("Generated content does not match the expected format.");
+      throw new Error("No valid response received from the model.");
     }
 
+    const parsedResult = JSON.parse(cleanedJsonText);
+
+    // Basic validation to ensure the result matches the expected structure
+    if (
+      parsedResult &&
+      typeof parsedResult.title === "string" &&
+      typeof parsedResult.description === "string" &&
+      Array.isArray(parsedResult.tags)
+    ) {
+      return parsedResult;
+    } else {
+      throw new Error("Generated content does not match the expected format.");
+    }
   } catch (error) {
     console.error("Error generating SEO content:", error);
-     if (error instanceof Error && error.message.includes('billing')) {
-         throw new Error("Content generation failed. Please ensure billing is enabled for your API key.");
+    if (error instanceof Error && error.message.includes("billing")) {
+      throw new Error(
+        "Content generation failed. Please ensure billing is enabled for your API key."
+      );
     }
-    throw new Error("Failed to generate SEO content. The model may have refused the request. Please try a different topic.");
+    throw new Error(
+      "Failed to generate SEO content. The model may have refused the request. Please try a different topic."
+    );
   }
 }
 
-export async function generateSocialPostContent(topic: string): Promise<SocialPostCopy> {
+export async function generateSocialPostContent(
+  topic: string
+): Promise<SocialPostCopy> {
   if (!process.env.API_KEY) {
     throw new Error("API_KEY environment variable not set.");
   }
@@ -83,19 +92,26 @@ export async function generateSocialPostContent(topic: string): Promise<SocialPo
 
   try {
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-pro',
+      model: "gemini-2.5-pro",
       contents: prompt,
       config: {
         responseMimeType: "application/json",
         responseSchema: {
           type: Type.OBJECT,
           properties: {
-            headline: { type: Type.STRING, description: "A short, punchy, and engaging headline." },
-            body: { type: Type.STRING, description: "A persuasive body paragraph." },
+            headline: {
+              type: Type.STRING,
+              description: "A short, punchy, and engaging headline.",
+            },
+            body: {
+              type: Type.STRING,
+              description: "A persuasive body paragraph.",
+            },
             features: {
               type: Type.ARRAY,
               items: { type: Type.STRING },
-              description: "A list of 3-4 key features or benefits as short bullet points."
+              description:
+                "A list of 3-4 key features or benefits as short bullet points.",
             },
           },
           required: ["headline", "body", "features"],
@@ -103,35 +119,47 @@ export async function generateSocialPostContent(topic: string): Promise<SocialPo
       },
     });
 
-    const jsonText = response?.text?.trim() || '';
+    const jsonText = response?.text?.trim() || "";
     // In rare cases, the model might still wrap the JSON in markdown backticks
-    const cleanedJsonText = jsonText?.replace(/^```json\s*|```$/g, '');
-    
+    const cleanedJsonText = jsonText?.replace(/^```json\s*|```$/g, "");
+
     if (!cleanedJsonText) {
-        throw new Error("No valid response received from the model.");
-    }
-    
-    const parsedResult = JSON.parse(cleanedJsonText);
-    
-    if (parsedResult && typeof parsedResult.headline === 'string' && typeof parsedResult.body === 'string' && Array.isArray(parsedResult.features)) {
-        return parsedResult;
-    } else {
-        throw new Error("Generated content does not match the expected format for social post copy.");
+      throw new Error("No valid response received from the model.");
     }
 
+    const parsedResult = JSON.parse(cleanedJsonText);
+
+    if (
+      parsedResult &&
+      typeof parsedResult.headline === "string" &&
+      typeof parsedResult.body === "string" &&
+      Array.isArray(parsedResult.features)
+    ) {
+      return parsedResult;
+    } else {
+      throw new Error(
+        "Generated content does not match the expected format for social post copy."
+      );
+    }
   } catch (error) {
     console.error("Error generating social post content:", error);
-     if (error instanceof Error && error.message.includes('billing')) {
-         throw new Error("Content generation failed. Please ensure billing is enabled for your API key.");
+    if (error instanceof Error && error.message.includes("billing")) {
+      throw new Error(
+        "Content generation failed. Please ensure billing is enabled for your API key."
+      );
     }
-    throw new Error("Failed to generate social post content. The model may have refused the request. Please try a different topic.");
+    throw new Error(
+      "Failed to generate social post content. The model may have refused the request. Please try a different topic."
+    );
   }
 }
 
 export async function generateImage(
   prompt: string,
-  aspectRatio: '16:9' | '1:1' | '9:16',
-  inputImage?: { data: string; mimeType: string }
+  aspectRatio: "16:9" | "1:1" | "9:16",
+  inputImage?:
+    | { data: string | undefined; mimeType: string | undefined }
+    | undefined
 ): Promise<string> {
   if (!process.env.API_KEY) {
     throw new Error("API_KEY environment variable not set.");
@@ -154,7 +182,7 @@ export async function generateImage(
       };
 
       const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash-image',
+        model: "gemini-2.5-flash-image",
         contents: { parts: [imagePart, textPart] },
         config: {
           responseModalities: [Modality.IMAGE],
@@ -168,21 +196,21 @@ export async function generateImage(
         }
       }
       throw new Error("No image was generated by the model.");
-
     } else {
       // Use Imagen for high-quality text-to-image tasks
       const response = await ai.models.generateImages({
-        model: 'imagen-4.0-generate-001',
+        model: "imagen-4.0-generate-001",
         prompt: prompt,
         config: {
           numberOfImages: 1,
-          outputMimeType: 'image/jpeg',
+          outputMimeType: "image/jpeg",
           aspectRatio: aspectRatio,
         },
       });
 
       if (response?.generatedImages && response.generatedImages.length > 0) {
-        const base64ImageBytes = response?.generatedImages[0]?.image?.imageBytes;
+        const base64ImageBytes =
+          response?.generatedImages[0]?.image?.imageBytes;
         return `data:image/jpeg;base64,${base64ImageBytes}`;
       } else {
         throw new Error("No image was generated.");
@@ -190,9 +218,13 @@ export async function generateImage(
     }
   } catch (error) {
     console.error("Error generating image:", error);
-    if (error instanceof Error && error.message.includes('billing')) {
-         throw new Error("Image generation failed. Please ensure billing is enabled for your API key.");
+    if (error instanceof Error && error.message.includes("billing")) {
+      throw new Error(
+        "Image generation failed. Please ensure billing is enabled for your API key."
+      );
     }
-    throw new Error("Failed to generate image. The model may have refused the request. Please try a different prompt.");
+    throw new Error(
+      "Failed to generate image. The model may have refused the request. Please try a different prompt."
+    );
   }
 }
