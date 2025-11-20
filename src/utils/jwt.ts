@@ -1,9 +1,9 @@
-import { SignJWT, jwtVerify } from 'jose';
+import { SignJWT, jwtVerify, type JWTPayload as JoseJWTPayload } from 'jose';
 import { config } from './config';
 
 const secret = new TextEncoder().encode(config.jwt.secret);
 
-export interface JWTPayload {
+export interface JWTPayload extends JoseJWTPayload {
   userId: string;
   email: string;
 }

@@ -58,6 +58,17 @@ export const generateThumbnailSchema = z
     }
   );
 
+export const generateChannelBannerSchema = z.object({
+  channelDescription: z.string().min(10).max(120),
+});
+
+export const generateSocialMediaPostSchema = z.object({
+  prompt: z.string().min(10).max(120),
+});
+
+export const generateShortsThumbnailsSchema = z.object({
+  prompt: z.string().min(10).max(120),
+});
 // Credit Transaction Schemas
 export const addCreditsSchema = z.object({
   userId: z.string().uuid("Invalid user ID"),
