@@ -4,6 +4,7 @@ import {
   generateImageSchema,
   generateSocialMediaPostSchema,
   generateThumbnailSchema,
+  generateSEOSchema,
 } from "../utils/validations";
 import { authenticateRequest } from "../utils/http";
 import type { RequestContext } from "../utils/http";
@@ -11,9 +12,13 @@ import {
   getCompositionInstructions,
   getFullPrompt,
 } from "../prompts/thumbnailGeneration";
-import { generateImage } from "../services/gemini.service";
+import {
+  generateImage,
+  generateSeoContentService,
+} from "../services/gemini.service";
 import { bannerGenerationPrompt } from "../prompts/bannerGeneration";
 import { getSocialMediaPostPrompt } from "../prompts/socialMediaPostGeneration";
+import { uploadBase64Image } from "../utils/digitalocean-spaces";
 
 export const generateThumbnailImage = async (ctx: RequestContext) => {
   try {
@@ -52,10 +57,19 @@ export const generateThumbnailImage = async (ctx: RequestContext) => {
       validatedData.faceImageData // optional
     );
 
-    // 6. Return the final response
+    // 6. Upload to DigitalOcean Spaces
+    const imageUrl = await uploadBase64Image(
+      image,
+      `thumbnail-${Date.now()}.jpg`
+    );
+
+    // 7. Return the final response with the public URL
     return {
       success: true,
-      data: image,
+      data: {
+        imageUrl,
+        base64Image: image // Still include base64 if needed
+      },
     };
   } catch (err: any) {
     console.error("Thumbnail Generation Error:", err);
@@ -71,25 +85,34 @@ export const generateThumbnailImage = async (ctx: RequestContext) => {
 export const generateChannelBanner = async (ctx: RequestContext) => {
   try {
     // 1. Authenticate user
-    const user = await authenticateRequest(ctx.request);
-    if (!user) {
-      return {
-        success: false,
-        message: "Unauthorized",
-        status: 401,
-      };
-    }
+    // const user = await authenticateRequest(ctx.request);
+    // if (!user) {
+    //   return {
+    //     success: false,
+    //     message: "Unauthorized",
+    //     status: 401,
+    //   };
+    // }
     // 2. Validate incoming data
     const validatedData = generateChannelBannerSchema.parse(ctx.body);
     const fullPrompt = bannerGenerationPrompt(validatedData.channelDescription);
 
-    // 5. Call your AI model to generate the thumbnail
+    // 5. Call your AI model to generate the banner
     const image = await generateImage(fullPrompt, "16:9");
 
-    // 6. Return the final response
+    // 6. Upload to DigitalOcean Spaces
+    const imageUrl = await uploadBase64Image(
+      image,
+      `banner-${Date.now()}.jpg`
+    );
+
+    // 7. Return the final response with the public URL
     return {
       success: true,
-      data: image,
+      data: {
+        imageUrl,
+        base64Image: image // Still include base64 if needed
+      },
     };
   } catch (err: any) {
     console.error("Thumbnail Generation Error:", err);
@@ -117,13 +140,22 @@ export const generateLogo = async (ctx: RequestContext) => {
     const validatedData = generateChannelBannerSchema.parse(ctx.body);
     const fullPrompt = bannerGenerationPrompt(validatedData.channelDescription);
 
-    // 5. Call your AI model to generate the thumbnail
+    // 5. Call your AI model to generate the image
     const image = await generateImage(fullPrompt, "1:1");
 
-    // 6. Return the final response
+    // 6. Upload to DigitalOcean Spaces
+    const imageUrl = await uploadBase64Image(
+      image,
+      `logo-${Date.now()}.jpg`
+    );
+
+    // 7. Return the final response with the public URL
     return {
       success: true,
-      data: image,
+      data: {
+        imageUrl,
+        base64Image: image // Still include base64 if needed
+      },
     };
   } catch (err: any) {
     console.error("Thumbnail Generation Error:", err);
@@ -136,7 +168,7 @@ export const generateLogo = async (ctx: RequestContext) => {
   }
 };
 
-export const generateSocialMediaPosts = async (ctx : RequestContext) => {
+export const generateSocialMediaPosts = async (ctx: RequestContext) => {
   try {
     // 1. Authenticate user
     const user = await authenticateRequest(ctx.request);
@@ -151,13 +183,22 @@ export const generateSocialMediaPosts = async (ctx : RequestContext) => {
     const validatedData = generateSocialMediaPostSchema.parse(ctx.body);
     const fullPrompt = getSocialMediaPostPrompt(validatedData.prompt);
 
-    // 5. Call your AI model to generate the thumbnail
+    // 5. Call your AI model to generate the image
     const image = await generateImage(fullPrompt, "1:1");
 
-    // 6. Return the final response
+    // 6. Upload to DigitalOcean Spaces
+    const imageUrl = await uploadBase64Image(
+      image,
+      `logo-${Date.now()}.jpg`
+    );
+
+    // 7. Return the final response with the public URL
     return {
       success: true,
-      data: image,
+      data: {
+        imageUrl,
+        base64Image: image // Still include base64 if needed
+      },
     };
   } catch (err: any) {
     console.error("Thumbnail Generation Error:", err);
@@ -168,9 +209,9 @@ export const generateSocialMediaPosts = async (ctx : RequestContext) => {
       status: 400,
     };
   }
-}
+};
 
-export const generateShortsThumbnails = async (ctx : RequestContext) => {
+export const generateShortsThumbnails = async (ctx: RequestContext) => {
   try {
     // 1. Authenticate user
     const user = await authenticateRequest(ctx.request);
@@ -185,13 +226,22 @@ export const generateShortsThumbnails = async (ctx : RequestContext) => {
     const validatedData = generateSocialMediaPostSchema.parse(ctx.body);
     const fullPrompt = getSocialMediaPostPrompt(validatedData.prompt);
 
-    // 5. Call your AI model to generate the thumbnail
+    // 5. Call your AI model to generate the image
     const image = await generateImage(fullPrompt, "1:1");
 
-    // 6. Return the final response
+    // 6. Upload to DigitalOcean Spaces
+    const imageUrl = await uploadBase64Image(
+      image,
+      `logo-${Date.now()}.jpg`
+    );
+
+    // 7. Return the final response with the public URL
     return {
       success: true,
-      data: image,
+      data: {
+        imageUrl,
+        base64Image: image // Still include base64 if needed
+      },
     };
   } catch (err: any) {
     console.error("Shorts Thumbnail Generation Error:", err);
@@ -202,7 +252,35 @@ export const generateShortsThumbnails = async (ctx : RequestContext) => {
       status: 400,
     };
   }
-}
+};
+
+export const generateSeoContent = async (ctx: RequestContext) => {
+  try {
+    const user = await authenticateRequest(ctx.request);
+    if (!user) {
+      return {
+        success: false,
+        message: "Unauthorized",
+        status: 401,
+      };
+    }
+    const validatedData = generateSEOSchema.parse(ctx.body);
+    const seoResult = generateSeoContentService(validatedData.videoTopic);
+
+    return {
+      success: true,
+      data: seoResult,
+    };
+  } catch (err: any) {
+    console.error("Seo Content Generation Error:", err);
+
+    return {
+      success: false,
+      message: err?.message || "Something went wrong",
+      status: 400,
+    };
+  }
+};
 export const getUserImages = async (ctx: RequestContext) => {
   const user = await authenticateRequest(ctx.request);
   const limit = ctx.query.limit ? parseInt(ctx.query.limit) : 50;

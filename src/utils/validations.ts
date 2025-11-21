@@ -69,6 +69,9 @@ export const generateSocialMediaPostSchema = z.object({
 export const generateShortsThumbnailsSchema = z.object({
   prompt: z.string().min(10).max(120),
 });
+export const generateSEOSchema = z.object({
+  videoTopic: z.string().min(10).max(120),
+});
 // Credit Transaction Schemas
 export const addCreditsSchema = z.object({
   userId: z.string().uuid("Invalid user ID"),

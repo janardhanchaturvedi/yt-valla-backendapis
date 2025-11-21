@@ -3,7 +3,7 @@ import { GoogleGenAI, Modality, Type } from "@google/genai";
 import type { SeoResult, SocialPostCopy } from "../types/types";
 
 // FIX: Moved generateSeoContent from types.ts to centralize API calls.
-export async function generateSeoContent(topic: string): Promise<SeoResult> {
+export async function generateSeoContentService(topic: string): Promise<SeoResult> {
   if (!process.env.API_KEY) {
     throw new Error("API_KEY environment variable not set.");
   }
