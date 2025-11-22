@@ -6,16 +6,18 @@ const spacesEndpoint = process.env.DO_SPACES_ENDPOINT || '';
 const accessKeyId = process.env.DO_SPACES_KEY || '';
 const secretAccessKey = process.env.DO_SPACES_SECRET || '';
 const bucketName = process.env.DO_SPACES_BUCKET || '';
+const imageEndpointURL = process.env.DO_BASE_URL || '';
+
 
 // Update the S3 client configuration
 const s3Client = new S3Client({
-  endpoint: `https://${spacesEndpoint}`,  // Add https:// here
-  region: 'blr1',  // Make sure this matches your region
+  endpoint: String(spacesEndpoint),
+  region: 'blr1', 
   credentials: {
     accessKeyId,
     secretAccessKey,
   },
-  forcePathStyle: false,  // Important for DigitalOcean Spaces
+  forcePathStyle: false, 
 });
 
 export const uploadToSpaces = async (fileBuffer: Buffer, fileName: string, contentType: string): Promise<string> => {
@@ -29,17 +31,16 @@ export const uploadToSpaces = async (fileBuffer: Buffer, fileName: string, conte
       ACL: 'public-read',
       ContentType: contentType,
     });
-    console.log("🚀 ~ uploadToSpaces ~ command:", command)
 
     await s3Client.send(command);
     
     // Construct the public URL correctly
-    return `https://${bucketName}.${spacesEndpoint}/${key}`;
-  } catch (error) {
+    return `${imageEndpointURL}/${key}`;
+  } catch (error: any) {
     console.error('Error details:', {
       error: error?.message,
       bucketName,
-      spacesEndpoint,
+      imageEndpointURL,
       key
     });
     throw new Error(`Failed to upload file to storage: ${error?.message}`);

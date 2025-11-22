@@ -77,7 +77,7 @@ export const generateThumbnailImage = async (ctx: RequestContext) => {
     return {
       success: false,
       message: err?.message || "Something went wrong",
-      status: 400,
+      status: err?.statusCode || 400,
     };
   }
 };
@@ -85,14 +85,14 @@ export const generateThumbnailImage = async (ctx: RequestContext) => {
 export const generateChannelBanner = async (ctx: RequestContext) => {
   try {
     // 1. Authenticate user
-    // const user = await authenticateRequest(ctx.request);
-    // if (!user) {
-    //   return {
-    //     success: false,
-    //     message: "Unauthorized",
-    //     status: 401,
-    //   };
-    // }
+    const user = await authenticateRequest(ctx.request);
+    if (!user) {
+      return {
+        success: false,
+        message: "Unauthorized",
+        status: 401,
+      };
+    }
     // 2. Validate incoming data
     const validatedData = generateChannelBannerSchema.parse(ctx.body);
     const fullPrompt = bannerGenerationPrompt(validatedData.channelDescription);
@@ -115,12 +115,12 @@ export const generateChannelBanner = async (ctx: RequestContext) => {
       },
     };
   } catch (err: any) {
-    console.error("Thumbnail Generation Error:", err);
+    console.error("Banner Generation Error:", err);
 
     return {
       success: false,
       message: err?.message || "Something went wrong",
-      status: 400,
+      status: err?.statusCode || 400,
     };
   }
 };
@@ -158,12 +158,12 @@ export const generateLogo = async (ctx: RequestContext) => {
       },
     };
   } catch (err: any) {
-    console.error("Thumbnail Generation Error:", err);
+    console.error("Logo Generation Error:", err);
 
     return {
       success: false,
       message: err?.message || "Something went wrong",
-      status: 400,
+      status: err?.statusCode || 400,
     };
   }
 };
@@ -189,7 +189,7 @@ export const generateSocialMediaPosts = async (ctx: RequestContext) => {
     // 6. Upload to DigitalOcean Spaces
     const imageUrl = await uploadBase64Image(
       image,
-      `logo-${Date.now()}.jpg`
+      `post-${Date.now()}.jpg`
     );
 
     // 7. Return the final response with the public URL
@@ -201,12 +201,12 @@ export const generateSocialMediaPosts = async (ctx: RequestContext) => {
       },
     };
   } catch (err: any) {
-    console.error("Thumbnail Generation Error:", err);
+    console.error("Social Post Generation Error:", err);
 
     return {
       success: false,
       message: err?.message || "Something went wrong",
-      status: 400,
+      status: err?.statusCode || 400,
     };
   }
 };
@@ -232,7 +232,7 @@ export const generateShortsThumbnails = async (ctx: RequestContext) => {
     // 6. Upload to DigitalOcean Spaces
     const imageUrl = await uploadBase64Image(
       image,
-      `logo-${Date.now()}.jpg`
+      `shorts-${Date.now()}.jpg`
     );
 
     // 7. Return the final response with the public URL
@@ -249,7 +249,7 @@ export const generateShortsThumbnails = async (ctx: RequestContext) => {
     return {
       success: false,
       message: err?.message || "Something went wrong",
-      status: 400,
+      status: err?.statusCode || 400,
     };
   }
 };
@@ -277,7 +277,7 @@ export const generateSeoContent = async (ctx: RequestContext) => {
     return {
       success: false,
       message: err?.message || "Something went wrong",
-      status: 400,
+      status: err?.statusCode || 400,
     };
   }
 };
