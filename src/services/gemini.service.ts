@@ -171,10 +171,15 @@ export async function generateImage(
       // Use Gemini for image-in-image-out tasks
       const fullPromptWithAspectRatio = `${prompt}. The final output image MUST have a ${aspectRatio} aspect ratio.`;
 
+      const base64Data = inputImage.data?.replace(
+        /^data:image\/\w+;base64,/,
+        ""
+      );
+
       const imagePart = {
         inlineData: {
           mimeType: inputImage.mimeType,
-          data: inputImage.data,
+          data: base64Data,
         },
       };
       const textPart = {

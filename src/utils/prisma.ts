@@ -1,13 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+// Import the configured Prisma client instance
+import prisma from '../config/prisma.config';
 
-const prismaClientSingleton = () => {
-  return new PrismaClient();
-};
-
-declare global {
-  var prisma: undefined | ReturnType<typeof prismaClientSingleton>;
-}
-
-export const prisma = globalThis.prisma ?? prismaClientSingleton();
-
-if (process.env.NODE_ENV !== 'production') globalThis.prisma = prisma;
+export { prisma };
