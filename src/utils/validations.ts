@@ -62,6 +62,9 @@ export const generateChannelBannerSchema = z.object({
   channelDescription: z.string().min(10).max(120),
 });
 
+export const generateChannelLogoSchema = z.object({
+  channelDescription: z.string().min(10).max(120),
+});
 export const generateSocialMediaPostSchema = z.object({
   prompt: z.string().min(10).max(120),
 });

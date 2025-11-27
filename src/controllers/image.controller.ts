@@ -5,6 +5,7 @@ import {
   generateSocialMediaPostSchema,
   generateThumbnailSchema,
   generateSEOSchema,
+  generateChannelLogoSchema,
 } from "../utils/validations";
 import { authenticateRequest } from "../utils/http";
 import type { RequestContext } from "../utils/http";
@@ -19,6 +20,7 @@ import {
 import { bannerGenerationPrompt } from "../prompts/bannerGeneration";
 import { getSocialMediaPostPrompt } from "../prompts/socialMediaPostGeneration";
 import { uploadBase64Image } from "../utils/digitalocean-spaces";
+import { logoGenerationPrompt } from "../prompts/logoGeneration";
 
 export const generateThumbnailImage = async (ctx: RequestContext) => {
   try {
@@ -137,8 +139,8 @@ export const generateLogo = async (ctx: RequestContext) => {
       };
     }
     // 2. Validate incoming data
-    const validatedData = generateChannelBannerSchema.parse(ctx.body);
-    const fullPrompt = bannerGenerationPrompt(validatedData.channelDescription);
+    const validatedData = generateChannelLogoSchema.parse(ctx.body);
+    const fullPrompt = logoGenerationPrompt(validatedData.channelDescription);
 
     // 5. Call your AI model to generate the image
     const image = await generateImage(fullPrompt, "1:1");
