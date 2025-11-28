@@ -98,6 +98,7 @@ export const generateChannelBanner = async (ctx: RequestContext) => {
     // 2. Validate incoming data
     const validatedData = generateChannelBannerSchema.parse(ctx.body);
     const fullPrompt = bannerGenerationPrompt(validatedData.channelDescription);
+    console.log(fullPrompt);
 
     // 5. Call your AI model to generate the banner
     const image = await generateImage(fullPrompt, "16:9");
