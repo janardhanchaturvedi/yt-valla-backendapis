@@ -1,19 +1,60 @@
-const fullPrompt = `You are a professional YouTube channel branding expert. Your task is to design a stunning, high-resolution channel banner for a channel whose content is about: "${prompt}".
+interface BannerPromptParams {
+  channelName: string;
+  description: string;
+  tagline?: string;
+  socialHandles?: string;
+  uploadedImage?: boolean;
+}
 
-    **Core Directives:**
-    1.  **Channel Identity:** The banner must visually represent the core theme and identity of the channel: "${prompt}".
-    2.  **Centralized Design (Safe Zone):** This is CRITICAL. All key elements—including text, logos, and important visuals—MUST be placed within the central "safe area" so they are visible on all devices. The areas outside this central zone should contain complementary background graphics that can be safely cropped.
-    3.  **Visuals & Imagery:** Create a compelling, high-quality visual that is relevant to the channel's content. It should be clean and professional, not cluttered.
-    4.  **Text/Typography:** If you include text, like the channel name or a tagline, it must be modern, clean, and highly legible. It should complement the overall aesthetic.
-    5.  **Color Palette:** Use a professional and cohesive color scheme that matches the channel's mood and topic.
+export const bannerGenerationPrompt = ({
+  channelName,
+  description,
+  tagline,
+  socialHandles,
+  uploadedImage,
+}: BannerPromptParams) => {
+  let imageInstruction = "";
+  if (uploadedImage) {
+    imageInstruction = `
+    **REFERENCE IMAGE INSTRUCTIONS:**
+    The user has provided a custom image (e.g., a photo, logo, or mascot). You MUST integrate this into the banner.
+    - **Blending:** Do not just "stick" it on top. Blend it naturally into the scene or frame it professionally.
+    - **Position:** Place this image within the center "Safe Zone" alongside the text. If it is a portrait, place it to the left or right of the text. If it is a logo, center it or balance it with the channel name.
+    - **Importance:** This image is a key part of the channel's brand identity. Make it look premium.`;
+  }
 
-    **Non-Negotiable Technical Requirements:**
-    -   **Aspect Ratio:** The final image MUST be a 16:9 landscape aspect ratio.
-    -   **High Resolution Look:** The design should look sharp and high-quality.
+  return `You are a world-class graphic designer specializing in YouTube Channel Art. Your task is to design a high-converting, 4K-quality channel banner for: "${channelName}".
 
-    **AVOID AT ALL COSTS:**
-    -   Placing important information outside the central safe area.
-    -   A cluttered or busy design.
-    -   Illegible or low-contrast text.`;
-export const bannerGenerationPrompt = (prompt: string) =>
-  fullPrompt.replace("${prompt}", prompt);
+    **PROJECT DETAILS:**
+    *   **Channel Name:** "${channelName}"
+    *   **Niche/Theme:** "${description}"
+    *   **Tagline:** "${tagline || ""}"
+    *   **Social Handles:** "${socialHandles || ""}"
+    
+    ${imageInstruction}
+
+    **CRITICAL DESIGN RULES (LAYOUT):**
+    YouTube banners are tricky. You MUST follow this layout to ensure the banner looks good on TV, Desktop, and Mobile.
+    
+    1.  **THE SAFE ZONE (CENTER):** All critical content—The Channel Name, Tagline, Social Handles, and key visual elements—MUST be strictly positioned in the horizontal and vertical center of the image.
+    2.  **HIERARCHY:**
+        *   **Primary:** The Channel Name "${channelName}" must be the largest, boldest, and most readable element. Use a modern, high-quality font.
+        *   **Secondary:** The Tagline "${tagline}" (if present) should be smaller, placed below the name.
+        *   **Tertiary:** The Social Handles "${socialHandles}" (if present) should be small, clean, and unobtrusive (e.g., at the bottom of the safe zone).
+    3.  **BACKGROUND:** The background art should extend to the very edges of the 16:9 canvas (for TV viewers), but it should be abstract or atmospheric outside the center safe zone so nothing important is cut off on mobile.
+
+    **AESTHETICS:**
+    *   **Theme:** visual style must match: ${description}.
+    *   **Quality:** Photorealistic, 3D render, or Vector Art (depending on niche). High contrast, sharp details.
+    *   **Colors:** Use a professional palette that fits the niche.
+    
+    **OUTPUT REQUIREMENT:**
+    *   **Resolution:** The image MUST be at least 2560x1440 pixels (YouTube Banner Standard).
+    *   Generate a single, flat, 16:9 image.
+    *   Ensure all text is spelled correctly.
+
+    **NEGATIVE CONSTRAINTS (STRICT):**
+    *   **NO TECHNICAL TEXT:** Do NOT include words like "Safe Zone", "Dimensions", "16:9", "2560x1440", or any measurement labels.
+    *   **NO GUIDES:** Do NOT include any visible guide lines, rulers, or safe area boxes. The "Safe Zone" is a mental guide for placement, NOT a visual element.
+    *   **NO PLACEHOLDERS:** Do not use placeholder text like "Your Name Here". Use the actual Channel Name provided.`;
+};

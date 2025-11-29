@@ -97,11 +97,21 @@ export const generateChannelBanner = async (ctx: RequestContext) => {
     }
     // 2. Validate incoming data
     const validatedData = generateChannelBannerSchema.parse(ctx.body);
-    const fullPrompt = bannerGenerationPrompt(validatedData.channelDescription);
+    const fullPrompt = bannerGenerationPrompt({
+      channelName: validatedData.channelName,
+      description: validatedData.channelDescription,
+      tagline: validatedData.tagline,
+      socialHandles: validatedData.socialHandles,
+      uploadedImage: !!validatedData.uploadedImage,
+    });
     console.log(fullPrompt);
 
     // 5. Call your AI model to generate the banner
-    const image = await generateImage(fullPrompt, "16:9");
+    const image = await generateImage(
+      fullPrompt,
+      "16:9",
+      validatedData.uploadedImage
+    );
 
     // 6. Upload to DigitalOcean Spaces
     const imageUrl = await uploadBase64Image(

@@ -59,7 +59,18 @@ export const generateThumbnailSchema = z
   );
 
 export const generateChannelBannerSchema = z.object({
+  channelName: z.string().min(1, "Channel name is required").max(100),
   channelDescription: z.string().min(10).max(120),
+  tagline: z.string().optional(),
+  socialHandles: z.string().optional(),
+  uploadedImage: z
+    .object({
+      data: z
+        .string()
+        .regex(/^data:image\/\w+;base64,/, "Invalid image base64"),
+      mimeType: z.enum(["image/jpeg", "image/png", "image/webp"]),
+    })
+    .optional(),
 });
 
 export const generateChannelLogoSchema = z.object({

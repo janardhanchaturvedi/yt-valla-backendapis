@@ -27,8 +27,8 @@ export function getCompositionInstructions({
         **INPUT IMAGE HANDLING (CRITICAL):** 
         The user has provided a reference image (e.g., their face, a product, or a logo). 
         1. **INTEGRATION:** You MUST use this uploaded image as the main subject/focal point. 
-        2. **ASPECT RATIO CORRECTION:** The input image might be square or portrait. You MUST place this subject into a completely new, wide 16:9 landscape composition.
-        3. **DO NOT STRETCH:** Do not distort or stretch the subject to fit. Instead, generate a new background that extends naturally to fill the 1920x1080 frame.
+        2. **ASPECT RATIO CORRECTION (16:9 LANDSCAPE):** The input image might be square or portrait. You MUST place this subject into a completely new, wide 16:9 landscape composition (1920x1080).
+        3. **OUTPAINTING & EXPANSION:** Do NOT stretch or distort the input image. Instead, perform "outpainting" to generate a new, seamless background that extends naturally to fill the 16:9 frame. The subject should stay proportional.
         4. **BLENDING:** Blend the subject professionally into the scene with matching lighting and shadows.
         `.trim();
   } else if (isIncludeFace) {
