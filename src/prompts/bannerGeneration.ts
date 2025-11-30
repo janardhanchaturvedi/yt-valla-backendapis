@@ -9,52 +9,35 @@ interface BannerPromptParams {
 export const bannerGenerationPrompt = ({
   channelName,
   description,
-  tagline,
-  socialHandles,
-  uploadedImage,
 }: BannerPromptParams) => {
-  let imageInstruction = "";
-  if (uploadedImage) {
-    imageInstruction = `
-    **REFERENCE IMAGE INSTRUCTIONS:**
-    The user has provided a custom image (e.g., a photo, logo, or mascot). You MUST integrate this into the banner.
-    - **Blending:** Do not just "stick" it on top. Blend it naturally into the scene or frame it professionally.
-    - **Position:** Place this image within the center "Safe Zone" alongside the text. If it is a portrait, place it to the left or right of the text. If it is a logo, center it or balance it with the channel name.
-    - **Importance:** This image is a key part of the channel's brand identity. Make it look premium.`;
-  }
+  const imageInstruction = `
+      **INPUT IMAGE IS A WIREFRAME LAYOUT:** 
+      - The provided image establishes the **MANDATORY POSITIONING** of text and logos. Do NOT move them.
+      - **YOUR GOAL:** Completely RE-RENDER the scene. The white text in the draft is just a placeholder. Turn it into **High-End 3D Typography**.
+      
+      **VISUAL STYLE INSTRUCTIONS (Make it Attractive):**
+      1.  **3D Texturing:** The Channel Name ("${channelName}") should look like a physical object in the scene. Use materials like **Brushed Metal, Neon Glass, Polished Gold, or Distressed Stone** depending on the theme.
+      2.  **Lighting:** Use cinematic lighting (Rim lights, volumetric fog, lens flares). The text should cast shadows or reflect the environment.
+      3.  **Background:** Replace the dark grey background with a **rich, detailed environment**. 
+          - If Tech: A futuristic server room or abstract circuit board with depth of field.
+          - If Gaming: A dynamic cyber-arena with sparks and energy.
+          - If Vlog/Lifestyle: A soft, bokeh-filled studio background with warm lighting.
+      4.  **Composition:** Keep the center "Safe Zone" clear and readable, but fill the edges (the sides of the banner) with interesting details.
+      
+      **THEME CONTEXT:**
+      - **Niche/Description:** "${description}"
+      - **Vibe:** Professional, High-Budget, Viral.
+      `;
 
-  return `You are a world-class graphic designer specializing in YouTube Channel Art. Your task is to design a high-converting, 4K-quality channel banner for: "${channelName}".
+  const fullPrompt = `You are a world-class Visual Designer. Create a 2560x1440 YouTube Banner.
+      
+      ${imageInstruction}
+      
+      **FINAL POLISH:**
+      - The output must look like a finalized render from Octane or Unreal Engine 5.
+      - Sharp details, 8k resolution textures.
+      - No flat colors. Everything must have depth.
+      `;
 
-    **PROJECT DETAILS:**
-    *   **Channel Name:** "${channelName}"
-    *   **Niche/Theme:** "${description}"
-    *   **Tagline:** "${tagline || ""}"
-    *   **Social Handles:** "${socialHandles || ""}"
-    
-    ${imageInstruction}
-
-    **CRITICAL DESIGN RULES (LAYOUT):**
-    YouTube banners are tricky. You MUST follow this layout to ensure the banner looks good on TV, Desktop, and Mobile.
-    
-    1.  **THE SAFE ZONE (CENTER):** All critical content—The Channel Name, Tagline, Social Handles, and key visual elements—MUST be strictly positioned in the horizontal and vertical center of the image.
-    2.  **HIERARCHY:**
-        *   **Primary:** The Channel Name "${channelName}" must be the largest, boldest, and most readable element. Use a modern, high-quality font.
-        *   **Secondary:** The Tagline "${tagline}" (if present) should be smaller, placed below the name.
-        *   **Tertiary:** The Social Handles "${socialHandles}" (if present) should be small, clean, and unobtrusive (e.g., at the bottom of the safe zone).
-    3.  **BACKGROUND:** The background art should extend to the very edges of the 16:9 canvas (for TV viewers), but it should be abstract or atmospheric outside the center safe zone so nothing important is cut off on mobile.
-
-    **AESTHETICS:**
-    *   **Theme:** visual style must match: ${description}.
-    *   **Quality:** Photorealistic, 3D render, or Vector Art (depending on niche). High contrast, sharp details.
-    *   **Colors:** Use a professional palette that fits the niche.
-    
-    **OUTPUT REQUIREMENT:**
-    *   **Resolution:** The image MUST be at least 2560x1440 pixels (YouTube Banner Standard).
-    *   Generate a single, flat, 16:9 image.
-    *   Ensure all text is spelled correctly.
-
-    **NEGATIVE CONSTRAINTS (STRICT):**
-    *   **NO TECHNICAL TEXT:** Do NOT include words like "Safe Zone", "Dimensions", "16:9", "2560x1440", or any measurement labels.
-    *   **NO GUIDES:** Do NOT include any visible guide lines, rulers, or safe area boxes. The "Safe Zone" is a mental guide for placement, NOT a visual element.
-    *   **NO PLACEHOLDERS:** Do not use placeholder text like "Your Name Here". Use the actual Channel Name provided.`;
+  return fullPrompt;
 };

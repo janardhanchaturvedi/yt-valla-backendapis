@@ -169,7 +169,7 @@ export async function generateImage(
   try {
     if (inputImage) {
       // Use Gemini for image-in-image-out tasks
-      const fullPromptWithAspectRatio = `${prompt}. The final output image MUST have a ${aspectRatio} aspect ratio. Generate a background to fill the ${aspectRatio} aspect ratio. Do not stretch the input image.`;
+       const fullPromptWithAspectRatio = `${prompt} \n\nCRITICAL OUTPUT REQUIREMENT: The generated image MUST have a strict ${aspectRatio} aspect ratio. If the input image has a different aspect ratio, you MUST extend the background or recompose the scene to fit the requested ${aspectRatio} frame. Do not distort the subject.`;
       const base64Data = inputImage.data?.replace(
         /^data:image\/\w+;base64,/,
         ""
@@ -191,7 +191,9 @@ export async function generateImage(
         config: {
           responseModalities: [Modality.IMAGE],
           // @ts-ignore
-          aspectRatio: aspectRatio,
+           imageConfig: {
+            aspectRatio: aspectRatio,
+          }
         },
       });
 

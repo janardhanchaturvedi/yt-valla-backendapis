@@ -65,9 +65,7 @@ export const generateChannelBannerSchema = z.object({
   socialHandles: z.string().optional(),
   uploadedImage: z
     .object({
-      data: z
-        .string()
-        .regex(/^data:image\/\w+;base64,/, "Invalid image base64"),
+      data: z.string(),
       mimeType: z.enum(["image/jpeg", "image/png", "image/webp"]),
     })
     .optional(),
