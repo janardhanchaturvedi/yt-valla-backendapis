@@ -19,6 +19,7 @@ import {
 } from "../services/gemini.service";
 import { bannerGenerationPrompt } from "../prompts/bannerGeneration";
 import { getSocialMediaPostPrompt } from "../prompts/socialMediaPostGeneration";
+import { getShortsThumbnailPrompt } from "../prompts/shortsThumbnailGeneration";
 import { uploadBase64Image } from "../utils/digitalocean-spaces";
 import { logoGenerationPrompt } from "../prompts/logoGeneration";
 
@@ -152,6 +153,7 @@ export const generateLogo = async (ctx: RequestContext) => {
     // 2. Validate incoming data
     const validatedData = generateChannelLogoSchema.parse(ctx.body);
     const fullPrompt = logoGenerationPrompt(validatedData.channelDescription);
+    console.log("fullPrompt", fullPrompt);
 
     // 5. Call your AI model to generate the image
     const image = await generateImage(fullPrompt, "1:1");
@@ -237,10 +239,10 @@ export const generateShortsThumbnails = async (ctx: RequestContext) => {
     }
     // 2. Validate incoming data
     const validatedData = generateSocialMediaPostSchema.parse(ctx.body);
-    const fullPrompt = getSocialMediaPostPrompt(validatedData.prompt);
+    const fullPrompt = getShortsThumbnailPrompt(validatedData.prompt);
 
     // 5. Call your AI model to generate the image
-    const image = await generateImage(fullPrompt, "1:1");
+    const image = await generateImage(fullPrompt, '9:16');
 
     // 6. Upload to DigitalOcean Spaces
     const imageUrl = await uploadBase64Image(
@@ -278,8 +280,7 @@ export const generateSeoContent = async (ctx: RequestContext) => {
       };
     }
     const validatedData = generateSEOSchema.parse(ctx.body);
-    const seoResult = generateSeoContentService(validatedData.videoTopic);
-
+    const seoResult = await generateSeoContentService(validatedData.videoTopic);
     return {
       success: true,
       data: seoResult,

@@ -1,4 +1,5 @@
-const fullPrompt = `You are a world-class social media designer and marketing expert. Your mission is to create a single, stunning, and highly professional promotional graphic for a social media post. The user's core idea for the post is: "${prompt}".
+export const getSocialMediaPostPrompt = (prompt: string) => {
+  const fullPrompt = `You are a world-class social media designer and marketing expert. Your mission is to create a single, stunning, and highly professional promotional graphic for a social media post. The user's core idea for the post is: "${prompt}".
 
     **CRITICAL INSTRUCTIONS - FOLLOW THESE PRECISELY:**
 
@@ -36,6 +37,5 @@ const fullPrompt = `You are a world-class social media designer and marketing ex
     *   Low-contrast text that is hard to read.
     *   Cartoonish or unprofessional fonts.`;
 
-export const getSocialMediaPostPrompt = (prompt: string) => {
-  return fullPrompt.replace("${prompt}", prompt);
+  return fullPrompt;
 };

@@ -128,6 +128,7 @@ export async function generateSocialPostContent(
     }
 
     const parsedResult = JSON.parse(cleanedJsonText);
+    console.log("parsedResult", parsedResult);
 
     if (
       parsedResult &&
@@ -142,6 +143,7 @@ export async function generateSocialPostContent(
       );
     }
   } catch (error) {
+    console.log("Error generating social post content:", error);
     console.error("Error generating social post content:", error);
     if (error instanceof Error && error.message.includes("billing")) {
       throw new Error(

@@ -1,4 +1,5 @@
-const fullPrompt = `You are a world-renowned brand identity designer, famous for creating clever, iconic, and minimalist logos. Your task is to design a complete logo (logomark + logotype) for a brand/channel named: "${prompt}". Your aesthetic is relentlessly modern and conceptually brilliant.
+export const logoGenerationPrompt = (prompt: string) => {
+  const fullPrompt = `You are a world-renowned brand identity designer, famous for creating clever, iconic, and minimalist logos. Your task is to design a complete logo (logomark + logotype) for a brand/channel named: "${prompt}". Your aesthetic is relentlessly modern and conceptually brilliant.
 
     **Part 1: The Logomark (The Symbol) - The Creative Core**
 
@@ -44,4 +45,5 @@ const fullPrompt = `You are a world-renowned brand identity designer, famous for
     *   NO 3D effects, shadows, or glows (other than the approved subtle gradients).
     *   NO generic, default system fonts like Arial or Times New Roman for the logotype.`;
 
-export const logoGenerationPrompt = (prompt: string) => fullPrompt.replace('${prompt}', prompt);
+  return fullPrompt;
+};
