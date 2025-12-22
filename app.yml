@@ -1,0 +1,5 @@
+name: yt-valla-backendapis
+script: index.ts
+interpreter: bun
+env:
+  PORT: 3001

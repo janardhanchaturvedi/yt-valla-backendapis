@@ -153,7 +153,6 @@ export const generateLogo = async (ctx: RequestContext) => {
     // 2. Validate incoming data
     const validatedData = generateChannelLogoSchema.parse(ctx.body);
     const fullPrompt = logoGenerationPrompt(validatedData.channelDescription);
-    console.log("fullPrompt", fullPrompt);
 
     // 5. Call your AI model to generate the image
     const image = await generateImage(fullPrompt, "1:1");
@@ -259,6 +258,7 @@ export const generateShortsThumbnails = async (ctx: RequestContext) => {
       },
     };
   } catch (err: any) {
+    console.log("err", err);
     console.error("Shorts Thumbnail Generation Error:", err);
 
     return {
