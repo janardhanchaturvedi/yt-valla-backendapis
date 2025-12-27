@@ -1,0 +1,25 @@
+name: YTVaala Webapp deployment
+
+on:
+  push:
+    branches: 
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Deploy via SSH using appleboy/ssh-action
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          command_timeout: 30m
+          host: ${{ secrets.SERVER_IP }}
+          username: root
+          key: ${{ secrets.HOST_SSH_KEY }}
+          script: |
+            cd projects/yt-valla-backendapis/
+            ./deploy.sh
